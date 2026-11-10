@@ -29,6 +29,12 @@ test('serves the app shell', async () => {
   assert.match(await response.text(), /Mission Board|Campus Missions|Mission 360/);
 });
 
+test('exposes a healthy deployment check', async () => {
+  const response = await fetch(`${baseUrl}/api/health`);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, app: 'mission-360' });
+});
+
 test('reports provider readiness without exposing server secrets', async () => {
   const response = await fetch(`${baseUrl}/api/config`);
   const config = await response.json();

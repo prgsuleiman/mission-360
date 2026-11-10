@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: mission-360
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.1
+      - key: SUPABASE_URL
+        value: https://hrgfxjahgcxiklpkqcge.supabase.co
+      - key: SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_tbX9YB9GpXE57CcZdfu-7w_BXCjtGLF
+      - key: PAYPAL_API_BASE
+        value: https://api-m.sandbox.paypal.com
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini

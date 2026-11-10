@@ -2,6 +2,10 @@
 
 Mission 360 is a local-and-worldwide mission board. Individuals, student groups, nonprofits, community organizations, and small businesses can post practical work; people choose missions that fit their skills and return a defined result. Missions can include research and enquiries, public information gathering, creative work, technology, events, peer support, and local community help.
 
+## Why it exists
+
+For many young people, building a life can feel like starting from zero: finding trustworthy guidance, getting a first chance to contribute, and navigating everyday systems can take more effort than it should. Mission 360 is meant to make useful next steps easier to find. It lets people ask for help, share local knowledge, work together, and build a visible record of completed contributions. The goal is to connect people to what already exists around them—not make them figure it out alone.
+
 ## Run locally
 
 Requirements: Node.js 20 or newer. The app has no npm dependencies.
@@ -19,6 +23,12 @@ npm test
 ```
 
 `.env` is ignored by Git. Never commit PayPal client secrets or OpenAI API keys.
+
+## Deploy a public demo
+
+The repository includes a Render Blueprint in [`render.yaml`](render.yaml). Open [Render's Blueprint deploy flow](https://dashboard.render.com/blueprint/new?repo=https://github.com/prgsuleiman/mission-360) and deploy the `mission-360` service on the Free plan. The service uses Supabase for persistent missions; the free web service may sleep after 15 minutes without traffic and take about a minute to wake. Add `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `OPENAI_API_KEY` to the service's Environment settings to enable provider-backed sandbox checkout and model matching. Until then, both features remain clearly marked demo fallbacks.
+
+After Render assigns the public URL, add that URL to Supabase Auth's allowed redirect URLs. The server uses Render's `RENDER_EXTERNAL_URL` automatically for magic-link redirects.
 
 ## Supabase
 

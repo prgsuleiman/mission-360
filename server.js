@@ -83,13 +83,17 @@ async function handle(req, res) {
     });
   }
 
+  if (req.method === 'GET' && url.pathname === '/api/health') {
+    return sendJson(res, 200, { ok: true, app: 'mission-360' });
+  }
+
   if (req.method === 'POST' && url.pathname === '/api/auth/magiclink') {
     try {
       const { email } = await readJson(req);
       if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) throw new Error('Shared sign-in is not configured yet.');
       if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
       const base = process.env.SUPABASE_URL.replace(/\/$/, '');
-      const redirect = process.env.SITE_URL || `http://${req.headers.host}`;
+      const redirect = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || `http://${req.headers.host}`;
       const response = await fetch(`${base}/auth/v1/otp?redirect_to=${encodeURIComponent(redirect)}`, {
         method: 'POST',
         headers: { apikey: process.env.SUPABASE_PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
@@ -180,6 +184,6 @@ async function handle(req, res) {
 
 function createServer() { return http.createServer((req, res) => { handle(req, res).catch(() => sendJson(res, 500, { error: 'Unexpected server error.' })); }); }
 
-if (require.main === module) createServer().listen(port, () => console.log(`Mission 360 running at http://localhost:${port}`));
+if (require.main === module) createServer().listen(port, '0.0.0.0', () => console.log(`Mission 360 listening on port ${port}`));
 
 module.exports = { handle, createServer, loadEnvFile };

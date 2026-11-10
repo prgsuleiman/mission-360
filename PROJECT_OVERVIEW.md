@@ -4,6 +4,8 @@
 
 Mission 360 turns useful requests into clear, claimable missions. People or organizations describe the work, who can do it, where it can happen, what result is expected, and what reward is offered. Helpers browse locally or worldwide, use AI matching to find a fit, and share their result with the mission owner.
 
+The founder's motivation is the friction young people face while trying to build their lives: useful guidance, first opportunities, and local resources can be difficult to discover and coordinate. Mission 360 aims to make the next useful step easier to see and easier to take, so people can contribute, learn, and build from the knowledge and support already around them instead of repeatedly starting from scratch.
+
 It is open to student groups and the wider community. Missions can involve practical help, community projects, research and enquiries, public information, creative work, technology, events, peer support, and career development.
 
 ## Current user journey
@@ -26,6 +28,7 @@ flowchart LR
 - **Supabase:** Auth magic links and shared mission storage; row-level security limits reads and writes.
 - **AI:** model-backed ranking and short explanations based on profile and mission details. A local matcher is available only as a clearly marked fallback.
 - **PayPal:** Sandbox Checkout Orders funds cash-reward missions. Funds land in the platform merchant account; helper payouts are not automated.
+- **Hosting:** Render Blueprint targets the Frankfurt region near the Supabase project and reads `PORT`/`RENDER_EXTERNAL_URL` from the platform.
 
 ## Current boundaries
 
