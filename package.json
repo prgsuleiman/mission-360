@@ -1,0 +1,7 @@
+{
+  "name": "campus-missions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Student mission board with AI matching and PayPal sandbox rewards",
+  "scripts": { "start": "node server.js" }
+}
