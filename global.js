@@ -1,5 +1,5 @@
 (() => {
-  const storageKey = 'campus-missions-session-v1';
+  const storageKey = 'mission-360-session-v1';
   let cfg = null;
   let session = null;
   let user = null;
@@ -7,7 +7,7 @@
   let paypalCanCharge = false;
   const byId = id => document.getElementById(id);
   const parse = response => response.json().catch(() => ({}));
-  const categoryArt = { Design:['🎨','#fff0e9'], 'Creative & media':['🎨','#fff0e9'], Tech:['💻','#e7efff'], 'Technology & data':['💻','#e7efff'], Career:['🪄','#fff5ce'], Community:['🌱','#e7f1e6'], 'Campus & community':['🌱','#e7f1e6'], 'Research & enquiry':['🔎','#f0e9ff'], 'Events & logistics':['🎟️','#fff1de'], 'Peer support':['🤝','#e7f1e6'] };
+  const categoryArt = { Design:['🎨','#fff0e9'], 'Creative & media':['🎨','#fff0e9'], Tech:['💻','#e7efff'], 'Technology & data':['💻','#e7efff'], Career:['🪄','#fff5ce'], Community:['🌱','#e7f1e6'], 'Community & local':['🌱','#e7f1e6'], 'Research & enquiry':['🔎','#f0e9ff'], 'Public information':['🗺️','#e6efff'], 'Events & logistics':['🎟️','#fff1de'], 'Peer support':['🤝','#e7f1e6'] };
   function updateCounts() {
     byId('open-count').textContent=missions.filter(m=>!m.state).length;
     byId('remote-count').textContent=missions.filter(m=>m.scope==='remote'&&!m.state).length;
@@ -15,14 +15,14 @@
   }
   const baseRender = render;
   render = function() {
-    if (activeFilter!=='Remote' && activeFilter!=='Campus') { const result=baseRender(); updateCounts(); return result; }
+    if (activeFilter!=='Remote' && activeFilter!=='Local') { const result=baseRender(); updateCounts(); return result; }
     const scope=activeFilter; activeFilter='All'; baseRender(); activeFilter=scope;
     const cards=[...document.querySelectorAll('.mission')];
-    for (const card of cards) { const mission=missions.find(m=>String(m.id)===card.dataset.id); card.hidden=!mission||mission.scope!==(scope==='Remote'?'remote':'campus'); }
+    for (const card of cards) { const mission=missions.find(m=>String(m.id)===card.dataset.id); card.hidden=!mission||mission.scope!==(scope==='Remote'?'remote':'local'); }
     const visible=cards.filter(card=>!card.hidden).length; byId('shown-count').textContent=visible; updateCounts();
     if (!visible) byId('mission-list').innerHTML='<div class="empty">No missions in this location yet. Try another filter or post one!</div>';
   };
-  for (const [label,filter] of [['Remote worldwide','Remote'],['Campus','Campus']]) {
+  for (const [label,filter] of [['Remote worldwide','Remote'],['Local','Local']]) {
     const button=document.createElement('button'); button.className='filter'; button.dataset.filter=filter; button.textContent=label;
     button.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('selected',x===button));activeFilter=filter;render()};
     document.querySelector('.filters').insertBefore(button,document.querySelector('.sort'));
@@ -55,7 +55,7 @@
     syncAccount();
   }
   function syncAccount() {
-    byId('header-name').textContent = user?.email ? user.email.split('@')[0] : 'Global student';
+    byId('header-name').textContent = user?.email ? user.email.split('@')[0] : 'Community member';
     byId('header-sub').textContent = user ? 'Signed in · worldwide board' : (cfg ? 'Sign in to post or accept' : 'Demo board · this browser');
     byId('header-avatar').textContent = user?.email?.[0]?.toUpperCase() || '✦';
     byId('auth-open').textContent = user ? 'Account' : 'Sign in';
@@ -64,11 +64,11 @@
   }
   function showAuth(message = '') { byId('auth-status').textContent = message; byId('auth-setup-note').textContent = cfg ? 'We’ll email a one-time sign-in link. Check your inbox and spam folder.' : 'Shared sign-in needs SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY. The demo board remains available in this browser.'; byId('auth-modal').classList.add('open'); }
   function missionBody(mission, status = 'open') {
-    return { title:mission.title, description:mission.description, deliverable:mission.deliverable || '', category:mission.category, scope:mission.scope, location:mission.location, reward_type:mission.rewardType, reward_amount:mission.reward, reward_currency:mission.rewardCurrency || 'USD', reward_description:mission.rewardDescription || '', skills:mission.skills || [], creator_id:user.id, creator_name:mission.creatorName || user.email?.split('@')[0] || 'Campus community', status };
+    return { title:mission.title, description:mission.description, deliverable:mission.deliverable || '', category:mission.category, scope:mission.scope, location:mission.location, reward_type:mission.rewardType, reward_amount:mission.reward, reward_currency:mission.rewardCurrency || 'USD', reward_description:mission.rewardDescription || '', skills:mission.skills || [], creator_id:user.id, creator_name:mission.creatorName || user.email?.split('@')[0] || 'Community member', status };
   }
   function fromRow(row) {
     const art = categoryArt[row.category] || ['✦','#edf4e8'];
-    return { id:row.id, title:row.title, description:row.description, deliverable:row.deliverable, category:row.category, scope:row.scope, location:row.location, rewardType:row.reward_type, reward:Number(row.reward_amount), rewardCurrency:row.reward_currency, rewardDescription:row.reward_description, skills:row.skills || [], by:row.creator_name || 'Campus community', ago:new Date(row.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}), state:row.status==='open'?null:row.status, claimedBy:row.claimed_by, creatorId:row.creator_id, icon:art[0], color:art[1] };
+    return { id:row.id, title:row.title, description:row.description, deliverable:row.deliverable, category:row.category, scope:row.scope, location:row.location, rewardType:row.reward_type, reward:Number(row.reward_amount), rewardCurrency:row.reward_currency, rewardDescription:row.reward_description, skills:row.skills || [], by:row.creator_name || 'Community member', ago:new Date(row.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}), state:row.status==='open'?null:row.status, claimedBy:row.claimed_by, creatorId:row.creator_id, icon:art[0], color:art[1] };
   }
   async function loadBoard() {
     if (!cfg) return;
@@ -93,7 +93,7 @@
   function localDraftFromForm() {
     const isPaypal = byId('reward-mode').value === 'paypal';
     const scope = byId('scope').value;
-    return { title:byId('title').value.trim(), description:byId('description').value.trim(), deliverable:byId('deliverable').value.trim(), category:byId('category').value, scope, location:scope==='remote'?'Remote · open worldwide':(byId('location').value.trim()||'Campus community'), creatorName:byId('group-name').value.trim(), rewardType:isPaypal?'paypal':'local', reward:isPaypal?Number(byId('reward').value):null, rewardCurrency:byId('currency').value, rewardDescription:isPaypal?'':byId('reward-description').value.trim(), skills:byId('skills').value.split(',').map(s=>s.trim()).filter(Boolean) };
+    return { title:byId('title').value.trim(), description:byId('description').value.trim(), deliverable:byId('deliverable').value.trim(), category:byId('category').value, scope, location:scope==='remote'?'Remote · open worldwide':(byId('location').value.trim()||'Local community'), creatorName:byId('group-name').value.trim(), rewardType:isPaypal?'paypal':'local', reward:isPaypal?Number(byId('reward').value):null, rewardCurrency:byId('currency').value, rewardDescription:isPaypal?'':byId('reward-description').value.trim(), skills:byId('skills').value.split(',').map(s=>s.trim()).filter(Boolean) };
   }
 
   byId('auth-open').onclick = () => showAuth();
@@ -110,7 +110,7 @@
   const originalShowCheckout = showCheckout;
   showCheckout = async function() {
     if (!cfg) return originalShowCheckout();
-    if (!user) { showAuth('Sign in first to post a mission to the shared worldwide board.'); return; }
+    if (!user) { showAuth('Sign in first to post a mission to the shared board.'); return; }
     const draft = localDraftFromForm();
     if (draft.rewardType==='paypal' && !paypalCanCharge) { toast('Connect PayPal sandbox credentials before posting a cash reward. Local and non-cash rewards are available now.'); return; }
     try {

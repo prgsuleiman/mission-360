@@ -1,4 +1,4 @@
--- Campus Missions shared board schema.
+-- Mission 360 shared board schema.
 -- Run in the Supabase SQL Editor for a project dedicated to this application.
 
 create table if not exists public.missions (
@@ -6,8 +6,8 @@ create table if not exists public.missions (
   title text not null check (char_length(title) between 4 and 100),
   description text not null check (char_length(description) between 10 and 2000),
   deliverable text not null default '' check (char_length(deliverable) <= 500),
-  category text not null check (category in ('Community', 'Design', 'Tech', 'Career', 'Research & enquiry', 'Campus & community', 'Creative & media', 'Technology & data', 'Events & logistics', 'Peer support')),
-  scope text not null check (scope in ('campus', 'remote')),
+  category text not null check (category in ('Community', 'Design', 'Tech', 'Career', 'Research & enquiry', 'Community & local', 'Creative & media', 'Technology & data', 'Events & logistics', 'Peer support', 'Public information')),
+  scope text not null check (scope in ('local', 'remote')),
   location text not null default '',
   reward_type text not null check (reward_type in ('paypal', 'local')),
   reward_amount numeric(12,2),
@@ -15,7 +15,7 @@ create table if not exists public.missions (
   reward_description text not null default '',
   skills text[] not null default '{}',
   creator_id uuid not null references auth.users(id) on delete cascade,
-  creator_name text not null default 'Campus community',
+  creator_name text not null default 'Community member',
   claimed_by uuid references auth.users(id) on delete set null,
   status text not null default 'open' check (status in ('draft', 'open', 'accepted', 'completed')),
   created_at timestamptz not null default now(),
@@ -68,3 +68,4 @@ create policy "Claimants can complete their mission"
   on public.missions for update to authenticated
   using (status = 'accepted' and claimed_by = (select auth.uid()))
   with check (status = 'completed' and claimed_by = (select auth.uid()));
+
