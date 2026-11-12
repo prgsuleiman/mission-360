@@ -28,6 +28,10 @@ npm test
 
 The repository includes a Render Blueprint in [`render.yaml`](render.yaml). Open [Render's Blueprint deploy flow](https://dashboard.render.com/blueprint/new?repo=https://github.com/prgsuleiman/mission-360) and deploy the `mission-360` service on the Free plan. The service uses Supabase for persistent missions; the free web service may sleep after 15 minutes without traffic and take about a minute to wake. Add `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and a model provider key to the service's Environment settings to enable provider-backed sandbox checkout and AI mission matching. OpenRouter is preferred when `OPENROUTER_API_KEY` is set; it defaults to the free-only `openrouter/free` router and supports `OPENROUTER_MODEL` overrides. Gemini and OpenAI remain supported. Without a provider key, matching uses a clearly identified local demo fallback.
 
+### Hackathon demo quick start
+
+Open the live [Mission 360 demo](https://mission-360-7t7t.onrender.com/). The homepage begins on the mission board and includes a judge quick-start panel. No sign-in is needed to browse sample missions, filter categories, inspect mission details, or try AI matching. Sample missions are clearly labeled. Posting and accepting shared missions require Supabase sign-in. For a timed walkthrough and recording notes, see [`DEMO_VIDEO_SCRIPT.md`](DEMO_VIDEO_SCRIPT.md).
+
 After Render assigns the public URL, add that URL to Supabase Auth's allowed redirect URLs. The server uses Render's `RENDER_EXTERNAL_URL` automatically for magic-link redirects.
 
 ## Supabase
