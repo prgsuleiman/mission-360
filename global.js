@@ -14,12 +14,21 @@
     byId('category-count').textContent=new Set(missions.filter(m=>!m.state).map(m=>m.category)).size;
   }
   const baseRender = render;
+  function markDemoExamples() {
+    for (const card of document.querySelectorAll('.mission')) {
+      const mission = missions.find(item => String(item.id) === card.dataset.id);
+      if (!mission?.demoOnly || card.querySelector('[data-demo-label]')) continue;
+      const label = document.createElement('span');
+      label.className = 'tag'; label.dataset.demoLabel = 'true'; label.textContent = 'Sample mission';
+      card.querySelector('.mission-top')?.append(label);
+    }
+  }
   render = function() {
-    if (activeFilter!=='Remote' && activeFilter!=='Local') { const result=baseRender(); updateCounts(); return result; }
+    if (activeFilter!=='Remote' && activeFilter!=='Local') { const result=baseRender(); markDemoExamples(); updateCounts(); return result; }
     const scope=activeFilter; activeFilter='All'; baseRender(); activeFilter=scope;
     const cards=[...document.querySelectorAll('.mission')];
     for (const card of cards) { const mission=missions.find(m=>String(m.id)===card.dataset.id); card.hidden=!mission||mission.scope!==(scope==='Remote'?'remote':'local'); }
-    const visible=cards.filter(card=>!card.hidden).length; byId('shown-count').textContent=visible; updateCounts();
+    const visible=cards.filter(card=>!card.hidden).length; markDemoExamples(); byId('shown-count').textContent=visible; updateCounts();
     if (!visible) byId('mission-list').innerHTML='<div class="empty">No missions in this location yet. Try another filter or post one!</div>';
   };
   for (const [label,filter] of [['Remote worldwide','Remote'],['Local','Local']]) {
@@ -72,7 +81,7 @@
   }
   async function loadBoard() {
     if (!cfg) return;
-    try { const rows = await db('/rest/v1/missions?select=*&status=neq.draft&order=created_at.desc'); missions.splice(0, missions.length, ...rows.map(fromRow)); render(); byId('shown-count').textContent = missions.length; }
+    try { const rows = await db('/rest/v1/missions?select=*&status=neq.draft&order=created_at.desc'); if (rows.length) missions.splice(0, missions.length, ...rows.map(fromRow)); else missions.forEach(mission => { mission.demoOnly = true; }); render(); byId('shown-count').textContent = missions.length; }
     catch (e) { toast(`Shared board unavailable: ${e.message}`); }
   }
   async function createMission(mission, status) {
@@ -136,6 +145,7 @@
   };
   byId('detail-action').onclick = async () => {
     if (!selectedMission) return;
+    if (selectedMission.demoOnly) { toast('Sample mission: sign in to post a real mission or accept live community work.'); return; }
     if (cfg && !user) { byId('detail-modal').classList.remove('open'); showAuth('Sign in to accept a mission and keep your progress in sync.'); return; }
     const next = selectedMission.state==='accepted'?'completed':'accepted';
     if (cfg && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(selectedMission.id)) {

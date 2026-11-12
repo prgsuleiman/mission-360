@@ -7,6 +7,7 @@ const { createServer } = require('../server');
 delete process.env.PAYPAL_CLIENT_ID;
 delete process.env.PAYPAL_CLIENT_SECRET;
 delete process.env.OPENAI_API_KEY;
+delete process.env.GEMINI_API_KEY;
 delete process.env.SUPABASE_URL;
 delete process.env.SUPABASE_PUBLISHABLE_KEY;
 
@@ -41,6 +42,7 @@ test('reports provider readiness without exposing server secrets', async () => {
   assert.equal(response.status, 200);
   assert.equal(config.paypalReady, false);
   assert.equal(config.aiReady, false);
+  assert.equal(config.aiProvider, null);
   assert.equal(config.paypalClientId, null);
 });
 
