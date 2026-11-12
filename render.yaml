@@ -18,3 +18,5 @@ services:
         value: https://api-m.sandbox.paypal.com
       - key: OPENAI_MODEL
         value: gpt-4o-mini
+      - key: OPENROUTER_MODEL
+        value: openrouter/free

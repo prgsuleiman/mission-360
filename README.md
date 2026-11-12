@@ -26,7 +26,7 @@ npm test
 
 ## Deploy a public demo
 
-The repository includes a Render Blueprint in [`render.yaml`](render.yaml). Open [Render's Blueprint deploy flow](https://dashboard.render.com/blueprint/new?repo=https://github.com/prgsuleiman/mission-360) and deploy the `mission-360` service on the Free plan. The service uses Supabase for persistent missions; the free web service may sleep after 15 minutes without traffic and take about a minute to wake. Add `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and either `GEMINI_API_KEY` or `OPENAI_API_KEY` to the service's Environment settings to enable provider-backed sandbox checkout and model matching. Gemini uses the `gemini-3.8-flash` model by default; set `GEMINI_MODEL` to change it. Without a provider key, matching uses a clearly identified local demo fallback.
+The repository includes a Render Blueprint in [`render.yaml`](render.yaml). Open [Render's Blueprint deploy flow](https://dashboard.render.com/blueprint/new?repo=https://github.com/prgsuleiman/mission-360) and deploy the `mission-360` service on the Free plan. The service uses Supabase for persistent missions; the free web service may sleep after 15 minutes without traffic and take about a minute to wake. Add `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and a model provider key to the service's Environment settings to enable provider-backed sandbox checkout and AI mission matching. OpenRouter is preferred when `OPENROUTER_API_KEY` is set; it defaults to the free-only `openrouter/free` router and supports `OPENROUTER_MODEL` overrides. Gemini and OpenAI remain supported. Without a provider key, matching uses a clearly identified local demo fallback.
 
 After Render assigns the public URL, add that URL to Supabase Auth's allowed redirect URLs. The server uses Render's `RENDER_EXTERNAL_URL` automatically for magic-link redirects.
 
@@ -38,7 +38,7 @@ Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and `SITE_URL` in `.env`. In Sup
 
 ## AI matching
 
-Mission matching is a core feature: the model ranks missions against a person's skills, interests, location preference, and available time, then explains each fit. Use either `GEMINI_API_KEY` (Google AI Studio free tier; optional `GEMINI_MODEL`, default `gemini-3.8-flash`) or `OPENAI_API_KEY` (optional `OPENAI_MODEL`). When both are configured, Gemini is selected. Without a provider key, the app reports and uses a clearly marked local demo matcher. The server bounds request sizes and filters model results to mission IDs supplied by the app.
+Mission matching is a core feature: the model ranks missions against a person's skills, interests, location preference, and available time, then explains each fit. Use `OPENROUTER_API_KEY` for OpenRouter (optional `OPENROUTER_MODEL`, default `openrouter/free`, which routes only to free models), `GEMINI_API_KEY` (optional `GEMINI_MODEL`, default `gemini-3.8-flash`), or `OPENAI_API_KEY` (optional `OPENAI_MODEL`). OpenRouter takes priority when configured. If OpenRouter's free providers are temporarily busy, the app falls back to clearly marked local demo matching. Without a provider key, the app uses the local demo matcher. The server bounds request sizes and filters model results to mission IDs supplied by the app.
 
 ## PayPal Sandbox
 
